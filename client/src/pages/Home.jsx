@@ -5,30 +5,62 @@ import Categorys from "../components/Categorys";
 import FeatureProducts from "../components/products/FeatureProducts";
 import Products from "../components/products/Products";
 import Footer from "../components/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { get_category, get_products } from "../store/reducers/homeReducer";
+import { useEffect } from "react";
+import AllCategoris from "../components/AllCategoris";
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const {
+    categorys,
+    products,
+    latest_product,
+    topRated_product,
+    discount_product,
+    status,
+  } = useSelector((state) => state.home);
+
+  useEffect(() => {
+    dispatch(get_category());
+    dispatch(get_products());
+  }, [dispatch]);
+
+  if (status === "loading") {
+    return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return (
+      <div className="text-center py-10 text-red-500">
+        Failed to load data. Please try again.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      <Headers />
+      <Headers categorys={categorys} />
+      <AllCategoris categorys={categorys} />
       <Banner />
       <div className="my-4">
-        <Categorys />
+        <Categorys categorys={categorys} />
       </div>
 
       <div className="py-[45px]">
-        <FeatureProducts />
+        <FeatureProducts products={products} />
       </div>
       <div className="py-10">
         <div className="w-[85%] flex flex-wrap mx-auto">
           <div className="grid w-full grid-cols-3 md-lg:grid-cols-2 md:grid-cols-3 gap-7">
             <div className="overflow-hidden">
-              <Products title="Latest Product" />
+              <Products title="Latest Product" products={latest_product} />
             </div>
             <div className="overflow-hidden">
-              <Products title="Top Rated Product" />
+              <Products title="Top Rated Product" products={topRated_product} />
             </div>
             <div className="overflow-hidden">
-              <Products title="Discount Product" />
+              <Products title="Discount Product" products={discount_product} />
             </div>
           </div>
         </div>

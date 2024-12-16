@@ -15,12 +15,24 @@ import {
   AiFillHeart,
   AiFillShopping,
 } from "react-icons/ai";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import language from "../../public/images/language.png";
 import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+// import {
+//   get_card_products,
+//   get_wishlist_products,
+// } from "../store/reducers/cardReducer";
+
 const Headers = () => {
-  const user = true;
+  //const user = false;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
+  const { card_product_count, wishlist_count } = useSelector(
+    (state) => state.card
+  );
   const { pathname } = useLocation();
   const [showShidebar, setShowShidebar] = useState(true);
   const [categoryShow, setCategoryShow] = useState(true);
@@ -33,7 +45,16 @@ const Headers = () => {
     "Tabs",
     "Travel",
     "Phones",
+    "68,69",
   ];
+
+  const redirect_card_page = () => {
+    if (userInfo) {
+      navigate(`/card`);
+    } else {
+      navigate(`/login`);
+    }
+  };
   return (
     <div className="w-full bg-white">
       <div className="header-top bg-[#eeeeee] md-lg:hidden">
@@ -75,25 +96,20 @@ const Headers = () => {
                     <li>English</li>
                   </ul>
                 </div>
-                <Link
-                  className="flex cursor-pointer justify-center items-center gap-2 text-sm"
-                  to="/dashboard"
-                >
-                  <span>
+                {userInfo ? (
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center gap-2 text-sm"
+                  >
                     <FaUser />
-                  </span>
-                  <span>Adilah</span>
-                </Link>{" "}
-                :{" "}
-                <Link
-                  to="/login"
-                  className="flex cursor-pointer justify-center items-center gap-2 text-sm"
-                >
-                  <span>
+                    <span>{userInfo.name || "User"}</span>
+                  </Link>
+                ) : (
+                  <Link to="/login" className="flex items-center gap-2 text-sm">
                     <FaLock />
-                  </span>
-                  <span>Login</span>
-                </Link>
+                    <span>Login</span>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -188,13 +204,18 @@ const Headers = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]">
+                  <div
+                    onClick={redirect_card_page}
+                    className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full bg-[#e2e2e2]"
+                  >
                     <span className="text-xl text-orange-500">
                       <AiFillShopping />
                     </span>
-                    <div className="w-[20px] h-[20px] absolute bg-green-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px]">
-                      5
-                    </div>
+                    {card_product_count !== 0 && (
+                      <div className="w-[20px] h-[20px] absolute bg-green-500 rounded-full text-white flex justify-center items-center -top-[3px] -right-[5px]">
+                        {card_product_count}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -336,7 +357,7 @@ const Headers = () => {
           </div>
         </div>
       </div>
-      <div className="w-[85%] lg:w-[90%] mx-auto">
+      {/* <div className="w-[85%] lg:w-[90%] mx-auto">
         <div className="flex w-full flex-wrap md-lg:gap-8">
           <div className="w-3/12 md-lg:w-full">
             <div className="bg-white relative">
@@ -437,7 +458,7 @@ const Headers = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

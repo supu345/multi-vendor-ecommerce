@@ -5,11 +5,12 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-//import { useDispatch, useSelector } from "react-redux";
+import { Swiper, SwiperSlide } from "swiper/react"; // Import Swiper components
 import "swiper/css/pagination";
-//import { Pagination } from "swiper";
+import { Pagination } from "swiper/modules";
+import "swiper/css"; // Import Swiper core styles
+import { useDispatch, useSelector } from "react-redux";
 import Ratings from "../components/Ratings";
 import { AiFillHeart } from "react-icons/ai";
 import { FaFacebookF, FaLinkedin } from "react-icons/fa";
@@ -248,20 +249,21 @@ const Details = () => {
               </div>
               <div className="flex gap-3">
                 {stock ? (
-                  <button
+                  <Link
+                    to="/"
                     // onClick={buy}
                     className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-emerald-500/40 bg-emerald-500 text-white"
                   >
                     Buy Now
-                  </button>
+                  </Link>
                 ) : (
                   ""
                 )}
                 <Link
-                  to="/"
+                  to={`/dashboard/chat/123`}
                   className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-lime-500/40 bg-lime-500 text-white block"
                 >
-                  Chat Seller
+                  Chat Seller/106
                 </Link>
               </div>
             </div>
@@ -312,12 +314,103 @@ const Details = () => {
             <div className="w-[28%] md-lg:w-full">
               <div className="pl-4 md-lg:pl-0">
                 <div className="px-3 py-2 text-slate-600 bg-slate-200">
-                  <h2> From shopName</h2>
-                  <h2> 62--related product</h2>
-                  <h2> 63--reviews</h2>
+                  <h2> Farid Fashion House</h2>
+                </div>
+                <div className="flex flex-col gap-5 mt-3 border p-3">
+                  {[1, 2, 3].map((p, i) => {
+                    return (
+                      <Link className="block">
+                        <div className="relative h-[270px]">
+                          <img
+                            className="w-full h-full"
+                            src={`http://localhost:5173/images/products/${p}.webp`}
+                          />
+
+                          <div className="flex justify-center items-center absolute text-white w-[38px] h-[38px] rounded-full bg-red-500 font-semibold text-xs left-2 top-2">
+                            6%
+                          </div>
+                        </div>
+                        <h2 className="text-slate-600 py-1">
+                          Lorem ipsum dolor sit, amet consectetur
+                        </h2>
+                        <div className="flex gap-2">
+                          <h2 className="text-[#6699ff] text-lg font-bold">
+                            $20
+                          </h2>
+                          <div className="flex items-center gap-2">
+                            <Ratings ratings={4.5} />
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div className="w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto">
+          <h2 className="text-2xl py-8 text-slate-600">Related Products</h2>
+          <div>
+            <Swiper
+              slidesPerView="auto"
+              breakpoints={{
+                1280: {
+                  slidesPerView: 3,
+                },
+                565: {
+                  slidesPerView: 2,
+                },
+              }}
+              spaceBetween={25}
+              loop={true}
+              pagination={{
+                clickable: true,
+                el: ".custom_bullet",
+              }}
+              modules={[Pagination]}
+              className="mySwiper"
+            >
+              {[1, 2, 3, 4, 5, 6, 7].map((p, i) => {
+                return (
+                  <SwiperSlide key={i}>
+                    <Link className="block">
+                      <div className="relative h-[270px]">
+                        <div className="w-full h-full">
+                          <img
+                            className="w-full h-full"
+                            src={`http://localhost:5173/images/products/${p}.webp`}
+                          />
+                          <div className="absolute h-full w-full top-0 left-0 bg-[#000] opacity-25 hover:opacity-50 transition-all duration-500"></div>
+                        </div>
+
+                        <div className="flex justify-center items-center absolute text-white w-[38px] h-[38px] rounded-full bg-red-500 font-semibold text-xs left-2 top-2">
+                          5%
+                        </div>
+                      </div>
+                      <div className="p-4 flex flex-col gap-1">
+                        <h2 className="text-slate-600 text-lg font-semibold">
+                          Lorem ipsum, dolor sit amet consectetur
+                        </h2>
+                        <div className="flex justify-start items-center gap-3">
+                          <h2 className="text-[#6699ff] text-lg font-bold">
+                            $20
+                          </h2>
+                          <div className="flex">
+                            <Ratings ratings={4.5} />
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+          </div>
+          <div className="w-full flex justify-center items-center py-10">
+            <div className="custom_bullet justify-center gap-3 !w-auto"></div>
           </div>
         </div>
       </section>

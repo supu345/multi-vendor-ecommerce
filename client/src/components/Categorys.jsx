@@ -3,15 +3,11 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { Link } from "react-router-dom";
 
-const Categorys = () => {
-  const categorys = [
-    "Clothing",
-    "Sports",
-    "Laptop",
-    "Tabs",
-    "Travel",
-    "Phones",
-  ];
+const Categorys = ({ categorys }) => {
+  if (!categorys || categorys.length === 0) {
+    return <div>No categories available</div>; // Show a message or a placeholder if categorys is empty
+  }
+
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -42,6 +38,7 @@ const Categorys = () => {
       items: 1,
     },
   };
+
   return (
     <div className="w-[87%] mx-auto relative">
       <Carousel
@@ -58,10 +55,10 @@ const Categorys = () => {
             to={`/products?category=${c.name}`}
           >
             <div className="w-full h-full relative p-3">
-              <img src={`http://localhost:5173/images/admin.png`} alt="image" />
+              <img src={c.image} alt="image" />
               <div className="absolute bottom-6 w-full mx-auto font-bold left-0 flex justify-center items-center">
                 <span className="py-[2px] px-6 bg-[#3330305d] text-white">
-                  {c}
+                  {c.name} {/* Display category name */}
                 </span>
               </div>
             </div>

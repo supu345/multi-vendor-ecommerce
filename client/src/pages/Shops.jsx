@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Headers from "../components/Headers";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -12,22 +12,96 @@ import Products from "../components/products/Products";
 import Footer from "../components/Footer";
 import ShopProducts from "../components/products/ShopProducts";
 import Pagination from "../components/Pagination";
+import {
+  price_range_product,
+  get_category,
+  query_products,
+} from "../store/reducers/homeReducer";
+import { useDispatch, useSelector } from "react-redux";
 const Shops = () => {
   const [filter, setFilter] = useState(true);
   const [styles, setStyles] = useState("grid");
   const [pageNumber, setPageNumber] = useState(1);
   const [parPage, setParPage] = useState(3);
+  const { products, totalProduct, latest_product, categorys, priceRange } =
+    useSelector((state) => state.home);
 
-  const categorys = [
-    "Clothing",
-    "Sports",
-    "Laptop",
-    "Tabs",
-    "Travel",
-    "Phones",
-  ];
-  const [state, setState] = useState({ values: [50, 2000] });
+  const dispatch = useDispatch();
+  // const categorys = [
+  //   "Clothing",
+  //   "Sports",
+  //   "Laptop",
+  //   "Tabs",
+  //   "Travel",
+  //   "Phones",
+  // ];
+  const [state, setState] = useState({
+    values: [priceRange.low, priceRange.high],
+  });
+  const [category, setCategory] = useState("");
+  const [rating, setRatingQ] = useState("");
+  const [sortPrice, setSortPrice] = useState("");
+  useEffect(() => {
+    dispatch(price_range_product());
+    dispatch(get_category());
+  }, []);
 
+  useEffect(() => {
+    dispatch(price_range_product());
+  }, []);
+  useEffect(() => {
+    setState({
+      values: [
+        priceRange.low,
+        priceRange.high === priceRange.low
+          ? priceRange.high + 1
+          : priceRange.hight,
+      ],
+    });
+  }, [priceRange]);
+
+  const queryCategoey = (e, value) => {
+    if (e.target.checked) {
+      setCategory(value);
+    } else {
+      setCategory("");
+    }
+  };
+  console.log(category);
+
+  useEffect(() => {
+    dispatch(
+      query_products({
+        low: state.values[0],
+        high: state.values[1],
+        category,
+        rating,
+        sortPrice,
+        pageNumber,
+      })
+    );
+  }, [
+    state.values[0],
+    state.values[1],
+    category,
+    rating,
+    pageNumber,
+    sortPrice,
+  ]);
+
+  const resetRating = () => {
+    setRatingQ("");
+    dispatch(
+      query_products({
+        low: state.values[0],
+        high: state.values[1],
+        category,
+        rating: "",
+        sortPrice,
+        pageNumber,
+      })
+    );
+  };
   return (
     <div>
       <Headers />
@@ -78,16 +152,16 @@ const Shops = () => {
                     key={i}
                   >
                     <input
-                      // checked={category === c.name ? true : false}
-                      //  onChange={(e) => queryCategoey(e, c.name)}
+                      checked={category === c.name ? true : false}
+                      onChange={(e) => queryCategoey(e, c.name)}
                       type="checkbox"
-                      id={c}
+                      id={c.name}
                     />
                     <label
                       className="text-slate-600 block cursor-pointer"
-                      htmlFor={c}
+                      htmlFor={c.name}
                     >
-                      {c}
+                      {c.name}
                     </label>
                   </div>
                 ))}
@@ -96,8 +170,12 @@ const Shops = () => {
                 <h2 className="text-xl font-bold mb-3 text-slate-600">Price</h2>
                 <Range
                   step={1}
-                  min={50}
-                  max={2000}
+                  min={priceRange.low}
+                  max={
+                    priceRange.high === priceRange.low
+                      ? priceRange.high + 1
+                      : priceRange.high
+                  }
                   values={state.values}
                   onChange={(values) => setState({ values })}
                   renderTrack={({ props, children }) => (
@@ -115,11 +193,14 @@ const Shops = () => {
                     />
                   )}
                 />
+
                 <div>
-                  <span className="text-red-500 font-bold text-lg">
-                    ${Math.floor(state.values[0])} - $
-                    {Math.floor(state.values[1])}
-                  </span>
+                  <div>
+                    <span className="text-red-500 font-bold text-lg">
+                      ${Math.floor(state.values[0] || 0)} - $
+                      {Math.floor(state.values[1] || 200)}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="py-3 flex flex-col gap-4">
@@ -128,7 +209,7 @@ const Shops = () => {
                 </h2>
                 <div className="flex flex-col gap-3">
                   <div
-                    // onClick={() => setRatingQ(5)}
+                    onClick={() => setRatingQ(5)}
                     className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
                   >
                     <span>
@@ -149,7 +230,7 @@ const Shops = () => {
                   </div>
                 </div>
                 <div
-                  // onClick={() => setRatingQ(4)}
+                  onClick={() => setRatingQ(4)}
                   className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
                 >
                   <span>
@@ -170,7 +251,7 @@ const Shops = () => {
                 </div>
 
                 <div
-                  // onClick={() => setRatingQ(3)}
+                  onClick={() => setRatingQ(3)}
                   className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
                 >
                   <span>
@@ -190,7 +271,7 @@ const Shops = () => {
                   </span>
                 </div>
                 <div
-                  // onClick={() => setRatingQ(2)}
+                  onClick={() => setRatingQ(2)}
                   className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
                 >
                   <span>
@@ -210,7 +291,7 @@ const Shops = () => {
                   </span>
                 </div>
                 <div
-                  //  onClick={() => setRatingQ(1)}
+                  onClick={() => setRatingQ(1)}
                   className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
                 >
                   <span>
@@ -230,7 +311,7 @@ const Shops = () => {
                   </span>
                 </div>
                 <div
-                  // onClick={resetRating}
+                  onClick={resetRating}
                   className="text-orange-500 flex justify-start items-start gap-2 text-xl cursor-pointer"
                 >
                   <span>
@@ -251,18 +332,17 @@ const Shops = () => {
                 </div>
               </div>
               <div className="py-5 flex flex-col gap-4 ">
-                <Products title="Latest Products" />
+                <Products title="Latest Products" products={latest_product} />
               </div>
             </div>
             <div className="w-9/12 md-lg:w-8/12 md:w-full">
               <div className="pl-8 md:pl-0 pt-4">
                 <div className="py-4 bg-white mb-10 px-3 rounded-md flex justify-between items-start border">
                   <h2 className="text-lg font-medium text-slate-600">
-                    Products
+                    {totalProduct} Products
                   </h2>
-
                   <select
-                    //onChange={(e) => setSortPrice(e.target.value)}
+                    onChange={(e) => setSortPrice(e.target.value)}
                     className="p-1 border outline-0 text-slate-600 font-semibold"
                     name=""
                     id=""
@@ -273,7 +353,7 @@ const Shops = () => {
                   </select>
                   <div className="flex justify-center items-start gap-4 md-lg:hidden">
                     <div
-                      // onClick={() => setStyles("grid")}
+                      onClick={() => setStyles("grid")}
                       className={`p-2 ${
                         styles === "grid" && "bg-slate-300"
                       } text-slate-600 hover:bg-slate-300 cursor-pointer rounded-sm`}
@@ -281,7 +361,7 @@ const Shops = () => {
                       <BsFillGridFill />
                     </div>
                     <div
-                      //onClick={() => setStyles("list")}
+                      onClick={() => setStyles("list")}
                       className={`p-2 ${
                         styles === "list" && "bg-slate-300"
                       } text-slate-600 hover:bg-slate-300 cursor-pointer rounded-sm`}
@@ -295,18 +375,21 @@ const Shops = () => {
                 <ShopProducts styles={styles} />
               </div>
               <div>
-                <Pagination
-                  pageNumber={pageNumber}
-                  setPageNumber={setPageNumber}
-                  totalItem={20}
-                  parPage={parPage}
-                  showItem={Math.floor(20 / 3)}
-                />
+                {totalProduct > parPage && (
+                  <Pagination
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    totalItem={totalProduct}
+                    parPage={parPage}
+                    showItem={Math.floor(totalProduct / parPage)}
+                  />
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

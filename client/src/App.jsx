@@ -5,6 +5,10 @@ import Card from "./pages/Card";
 import Details from "./pages/Details";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import ProtectUser from "./utils/ProtectUser";
+import Index from "./components/dashboard/Index";
+import Chat from "./components/dashboard/Chat";
 
 function App() {
   return (
@@ -16,6 +20,13 @@ function App() {
         <Route path="/shops" element={<Shops />} />
         <Route path="/card" element={<Card />} />
         <Route path="/product/details/:slug" element={<Details />} />
+        <Route path="/dashboard" element={<ProtectUser />}>
+          <Route path="" element={<Dashboard />}>
+            <Route path="" element={<Index />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="chat/:sellerId" element={<Chat />} />
+          </Route>
+        </Route>
       </Routes>
     </BrowserRouter>
   );
