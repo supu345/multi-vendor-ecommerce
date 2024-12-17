@@ -59,6 +59,7 @@ app.use("/api", require("./routes/dashboard/productRoutes"));
 app.use("/api/home", require("./routes/home/homeRoutes"));
 app.use("/api", require("./routes/home/customerAuthRoutes"));
 app.use("/api", require("./routes/home/cardRoutes"));
+app.use("/api", require("./routes/order/orderRoutes"));
 const port = process.env.PORT || 5030;
 dbConnect();
 server.listen(port, () => console.log(`Server is running on port ${port}!`));

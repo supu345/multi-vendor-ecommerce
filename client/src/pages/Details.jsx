@@ -17,7 +17,7 @@ import { FaFacebookF, FaLinkedin } from "react-icons/fa";
 import { AiFillGithub, AiOutlineTwitter } from "react-icons/ai";
 import Reviews from "../components/Reviews";
 // import Reviews from "../components/Reviews";
-// import { get_product } from "../store/reducers/homeReducer";
+import { get_product } from "../store/reducers/homeReducer";
 // import {
 //   add_to_card,
 //   messageClear,
@@ -29,6 +29,14 @@ const Details = () => {
   const images = [1, 2, 3, 4, 5, 6, 7];
   const [image, setImage] = useState("");
   const [state, setState] = useState("reviews");
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { product, relatedProducts, moreProducts } = useSelector(
+    (state) => state.home
+  );
+  const { userInfo } = useSelector((state) => state.auth);
+  const { errorMessage, successMessage } = useSelector((state) => state.card);
   const discount = 5;
   const stock = 5;
   const responsive = {
@@ -61,7 +69,47 @@ const Details = () => {
       items: 1,
     },
   };
+  const [quantity, setQuantity] = useState(1);
 
+  const inc = () => {
+    if (quantity >= product.stock) {
+      toast.error("Out of stock");
+    } else {
+      setQuantity(quantity + 1);
+    }
+  };
+
+  const dec = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+  const add_card = () => {
+    if (userInfo) {
+      dispatch(
+        add_to_card({
+          userId: userInfo.id,
+          quantity,
+          productId: product._id,
+        })
+      );
+    } else {
+      navigate("/login");
+    }
+  };
+  useEffect(() => {
+    dispatch(get_product(slug));
+  }, [slug]);
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+  }, [errorMessage, successMessage]);
   return (
     <div>
       <Headers />

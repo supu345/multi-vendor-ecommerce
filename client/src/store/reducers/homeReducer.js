@@ -70,6 +70,18 @@ export const query_products = createAsyncThunk(
   }
 );
 
+export const get_product = createAsyncThunk(
+  "product/get_product",
+  async (slug, { fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(`/home/get-product/${slug}`);
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {
+      console.log(error.response);
+    }
+  }
+);
 export const homeReducer = createSlice({
   name: "home",
   initialState: {
@@ -84,6 +96,15 @@ export const homeReducer = createSlice({
       low: 0,
       high: 100,
     },
+    product: {},
+    relatedProducts: [],
+    moreProducts: [],
+    successMessage: "",
+    errorMessage: "",
+    totalReview: 0,
+    rating_review: [],
+    reviews: [],
+    banners: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -126,6 +147,13 @@ export const homeReducer = createSlice({
       .addCase(query_products.rejected, (state, { payload }) => {
         state.status = "failed";
         state.error = payload || "Failed to query products.";
+      })
+
+      .addCase(get_product.fulfilled, (state, { payload }) => {
+        console.log("Payload from get_product:", payload); // Debugging
+        state.product = payload?.product || {};
+        state.relatedProducts = payload?.relatedProducts || [];
+        state.moreProducts = payload?.moreProducts || [];
       });
   },
 });
